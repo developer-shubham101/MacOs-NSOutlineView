@@ -55,7 +55,7 @@ class ViewController: NSViewController {
       //4
       if let item = item as? Feed {
         //5
-        if let index = self.feeds.index( where: {$0.name == item.name} ) {
+        if let index = self.feeds.firstIndex( where: {$0.name == item.name} ) {
           //6
           self.feeds.remove(at: index)
           //7
@@ -65,7 +65,7 @@ class ViewController: NSViewController {
         //8
         for feed in self.feeds {
           //9
-          if let index = feed.children.index( where: {$0.title == item.title} ) {
+          if let index = feed.children.firstIndex( where: {$0.title == item.title} ) {
             feed.children.remove(at: index)
             outlineView.removeItems(at: IndexSet(integer: index), inParent: feed, withAnimation: .slideLeft)
           }
@@ -108,14 +108,14 @@ extension ViewController: NSOutlineViewDelegate {
     var view: NSTableCellView?
     //1
     if let feed = item as? Feed {
-      if tableColumn?.identifier == "DateColumn" {
-        view = outlineView.make(withIdentifier: "DateCell", owner: self) as? NSTableCellView
+			if convertFromNSUserInterfaceItemIdentifier((tableColumn?.identifier)!) == "DateColumn" {
+        view = outlineView.makeView(withIdentifier: convertToNSUserInterfaceItemIdentifier("DateCell"), owner: self) as? NSTableCellView
         if let textField = view?.textField {
           textField.stringValue = ""
           textField.sizeToFit()
         }
       } else {
-        view = outlineView.make(withIdentifier: "FeedCell", owner: self) as? NSTableCellView
+        view = outlineView.makeView(withIdentifier: convertToNSUserInterfaceItemIdentifier("FeedCell"), owner: self) as? NSTableCellView
         if let textField = view?.textField {
           textField.stringValue = feed.name
           textField.sizeToFit()
@@ -123,9 +123,9 @@ extension ViewController: NSOutlineViewDelegate {
       }
     } else if let feedItem = item as? FeedItem {
       //1
-      if tableColumn?.identifier == "DateColumn" {
+			if convertFromNSUserInterfaceItemIdentifier((tableColumn?.identifier)!) == "DateColumn" {
         //2
-        view = outlineView.make(withIdentifier: "DateCell", owner: self) as? NSTableCellView
+        view = outlineView.makeView(withIdentifier: convertToNSUserInterfaceItemIdentifier("DateCell"), owner: self) as? NSTableCellView
         
         if let textField = view?.textField {
           //3
@@ -134,7 +134,7 @@ extension ViewController: NSOutlineViewDelegate {
         }
       } else {
         //4
-        view = outlineView.make(withIdentifier: "FeedItemCell", owner: self) as? NSTableCellView
+        view = outlineView.makeView(withIdentifier: convertToNSUserInterfaceItemIdentifier("FeedItemCell"), owner: self) as? NSTableCellView
         if let textField = view?.textField {
           //5
           textField.stringValue = feedItem.title
@@ -167,3 +167,13 @@ extension ViewController: NSOutlineViewDelegate {
   }
 }
 
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromNSUserInterfaceItemIdentifier(_ input: NSUserInterfaceItemIdentifier) -> String {
+	return input.rawValue
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToNSUserInterfaceItemIdentifier(_ input: String) -> NSUserInterfaceItemIdentifier {
+	return NSUserInterfaceItemIdentifier(rawValue: input)
+}
